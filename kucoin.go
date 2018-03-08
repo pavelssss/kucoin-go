@@ -492,7 +492,7 @@ func (b *Kucoin) CancelWithdrawal(coin, txOid string) (withdrawal Withdrawal, er
 	return
 }
 
-func (b *Kucoin) OrderBook(pair string, limit int64)(orderBook OrderBook, err error){
+func (b *Kucoin) OrderBook(pair string, limit int)(orderBook OrderBook, err error){
 	if len(pair) < 1 {
 		return orderBook, fmt.Errorf("The not all required parameters are presented")
 	}
@@ -500,7 +500,7 @@ func (b *Kucoin) OrderBook(pair string, limit int64)(orderBook OrderBook, err er
 	if limit == 0 {
 		limitString = "";
 	}else{
-		limitString = "&limit="+string(limit)
+		limitString = "&limit="+strconv.Itoa(limit)
 	}
 	r, err := b.client.do("GET", "open/orders?symbol="+strings.ToUpper(pair)+limitString, nil, false)
 	if err != nil {
