@@ -491,3 +491,31 @@ func (b *Kucoin) CancelWithdrawal(coin, txOid string) (withdrawal Withdrawal, er
 	withdrawal = rawRes.Data
 	return
 }
+
+func (b *Kucoin) OrderBook(coin string, limit int64)(orderBook OrderBook, err error){
+	if len(coin) < 1 {
+		return orderBook, fmt.Errorf("The not all required parameters are presented")
+	}
+	var limitString string
+	if limit == 0 {
+		limitString = "";
+	}else{
+		limitString = "&limit="+string(limit)
+	}
+	r, err := b.client.do("GET", "market/open/orders?symbol="+strings.ToUpper(coin)+limitString, nil, false)
+	if err != nil {
+		return
+	}
+	var response interface{}
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	var rawOrderBook rawOrderBook
+	err = json.Unmarshal(r, &rawOrderBook)
+	orderBook.Sell = rawOrderBook.Data.Sell
+	orderBook.Buy = rawOrderBook.Data.Buy
+	return
+}
