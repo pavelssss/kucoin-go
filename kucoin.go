@@ -519,3 +519,37 @@ func (b *Kucoin) OrderBook(pair string, limit int)(orderBook OrderBook, err erro
 	orderBook.Buy = rawOrderBook.Data.Buy
 	return
 }
+
+// Example: // - Symbol = KCS-BTC
+
+func (b *Kucoin) GetTradeHistory(symbol string, limit int,  since uint64) (tradeHistory TradeHistory, err error) {
+	if len(symbol) < 1  {
+		return tradeHistory, fmt.Errorf("The not all required parameters are presented")
+	}
+	payload := map[string]string{}
+	payload["symbol"] = symbol
+	if limit != 0 {
+		payload["limit"] = fmt.Sprintf("%v", limit)
+	}
+
+	if since != 0 {
+		payload["since"] = fmt.Sprintf("%v", since)
+	}
+
+	r, err := b.client.do("GET", "open/deal-orders", payload, false)
+	if err != nil {
+		return
+	}
+	var response interface{}
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	var rawRes rawTradeHistory
+	err = json.Unmarshal(r, &rawRes)
+	tradeHistory = rawRes.Data
+	return
+}
+
