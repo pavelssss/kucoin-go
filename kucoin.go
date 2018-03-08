@@ -492,8 +492,8 @@ func (b *Kucoin) CancelWithdrawal(coin, txOid string) (withdrawal Withdrawal, er
 	return
 }
 
-func (b *Kucoin) OrderBook(coin string, limit int64)(orderBook OrderBook, err error){
-	if len(coin) < 1 {
+func (b *Kucoin) OrderBook(pair string, limit int64)(orderBook OrderBook, err error){
+	if len(pair) < 1 {
 		return orderBook, fmt.Errorf("The not all required parameters are presented")
 	}
 	var limitString string
@@ -502,7 +502,7 @@ func (b *Kucoin) OrderBook(coin string, limit int64)(orderBook OrderBook, err er
 	}else{
 		limitString = "&limit="+string(limit)
 	}
-	r, err := b.client.do("GET", "market/open/orders?symbol="+strings.ToUpper(coin)+limitString, nil, false)
+	r, err := b.client.do("GET", "open/orders?symbol="+strings.ToUpper(pair)+limitString, nil, false)
 	if err != nil {
 		return
 	}
